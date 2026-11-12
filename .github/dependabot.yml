@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/" # Location of package manifests
+    open-pull-requests-limit: 50
+    schedule:
+      interval: "daily"
+    groups:
+      maven-dependencies:
+        patterns:
+          - '*'
+
+# Dependencies for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 10
+    groups:
+      github-actions-dependencies:
+        patterns:
+          - '*'

@@ -1,0 +1,15 @@
+name: "Dependabot Auto Approve and Merge"
+permissions: read-all
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  call-automerge:
+    uses: flowlogix/base-pom/.github/workflows/dependabot-automerge.yml@bd1bf127d88f1538383c7ca0e3424c4d0a23310a # v148
+    permissions:
+      checks: read
+      contents: write
+      pull-requests: write
+    secrets:
+      github-token: ${{ secrets.GH_AUTOMERGE_TOKEN }}
