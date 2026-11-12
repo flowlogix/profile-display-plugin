@@ -27,28 +27,27 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
  * Maven core extension that lists all profiles of the top-level project once per build,
  * replacing a separate {@code mvn -N help:all-profiles} invocation.
  * <p>
- * Set {@code -Dprofile.display.skip=true} to suppress the output.
+ * Set {@code -Dprofile.display} to enable the output.
  */
 @Slf4j
 @Named("profile-display")
 @Singleton
 public class ProfileDisplayExtension extends AbstractMavenLifecycleParticipant {
     /**
-     * Property that disables the profile listing when set to {@code true}.
+     * Property that enables the profile listing.
      */
-    public static final String SKIP_PROPERTY = "profile.display.skip";
+    public static final String DISPLAY_PROPERTY = "profile.display";
 
     @Override
     public void afterProjectsRead(MavenSession session) {
         Optional.of(session)
-                .filter(Predicate.not(ProfileDisplayExtension::isSkipped))
+                .filter(ProfileDisplayExtension::isEnabled)
                 .map(MavenSession::getTopLevelProject)
                 .ifPresent(project -> display(project, session.getSettings()));
     }
@@ -60,12 +59,12 @@ public class ProfileDisplayExtension extends AbstractMavenLifecycleParticipant {
                         profile.getSource()));
     }
 
-    private static boolean isSkipped(MavenSession session) {
+    private static boolean isEnabled(MavenSession session) {
         return Stream.of(session.getUserProperties(), session.getSystemProperties())
-                .map(properties -> properties.getProperty(SKIP_PROPERTY))
+                .map(properties -> properties.getProperty(DISPLAY_PROPERTY))
                 .filter(Objects::nonNull)
                 .findFirst()
-                .map(Boolean::parseBoolean)
+                .map(value -> value.isEmpty() || Boolean.parseBoolean(value))
                 .orElse(false);
     }
 }
