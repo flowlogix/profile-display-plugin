@@ -6,20 +6,21 @@
     <artifactId>profile-display-plugin</artifactId>
     <version>1.x-SNAPSHOT</version>
 
-    <name>Maven profile display plugin</name>
+    <name>Maven profile display extension</name>
+    <description>Maven core extension that lists all available and active profiles once per build,
+    for the top-level project only, without a separate help:all-profiles invocation</description>
 
     <parent>
         <groupId>com.flowlogix</groupId>
         <artifactId>infra-pom</artifactId>
-        <version>148</version>
+        <version>149</version>
     </parent>
 
     <properties>
-        <!-- Override target java release -->
-        <!-- <maven.compiler.release>25</maven.compiler.release> -->
-        <flowlogix.bom.version>55</flowlogix.bom.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.version>3.10.0</maven.version>
+        <flowlogix.bom.version>56</flowlogix.bom.version>
         <flowlogix.depchain.version>135</flowlogix.depchain.version>
-        <flowlogix.version>11.7.6</flowlogix.version>
         <checkstyle.suppressionsLocation>${maven.multiModuleProjectDirectory}/src/checkstyle/suppressions.xml</checkstyle.suppressionsLocation>
         <checkstyle.headerLocation>${maven.multiModuleProjectDirectory}/src/checkstyle/apache-header.txt</checkstyle.headerLocation>
         <!-- Turn off maven build cache -->
@@ -30,9 +31,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>${jakarta.ee.version}</version>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <version>${maven.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -44,21 +45,18 @@
 
         <dependency>
             <groupId>com.flowlogix.depchain</groupId>
-            <artifactId>integration-test</artifactId>
+            <artifactId>unit-test</artifactId>
             <version>${flowlogix.depchain.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
             <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.flowlogix</groupId>
-            <artifactId>flowlogix-jee</artifactId>
-            <version>${flowlogix.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -74,4 +72,21 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>sisu-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-index</id>
+                        <goals>
+                            <goal>main-index</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
